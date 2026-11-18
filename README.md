@@ -8,7 +8,7 @@
 
 PocketView 用一个无边框窗口打开网页，适合阅读文字、查看资料和播放视频。导航在需要时出现，标签页放在侧边并可随时隐藏。首页是本地收藏卡片，收藏、设置和浏览数据都保存在程序目录中。
 
-基于 **C#、WinForms 和 Microsoft WebView2**，面向 **Windows 10 / 11 x64**。
+基于 **C#、WinForms 和 Microsoft WebView2**，面向 **Windows 10 / 11 x64**。原创代码采用 [MIT 许可证](LICENSE)。
 
 ## 界面
 
@@ -214,4 +214,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\verify.ps1
 - 网站兼容性、视频编解码、DRM 和登录策略取决于具体网站与内核，仍需按使用场景验证。
 - 完整便携运行已在本机验证，尚未在另一台实体电脑完成验收。
 
-第三方组件许可、Chrome 图标来源及相关说明见 [THIRD-PARTY.md](THIRD-PARTY.md)。本项目不由 Google 或 Microsoft 提供或背书。
+## 许可证
+
+PocketView 原创代码和界面样式采用 [MIT 许可证](LICENSE)。欢迎使用、修改和分发，保留原许可证与版权声明即可。
+
+MIT 许可不包含第三方组件、Google Chrome 原始图标及其衍生图标的权利授权；这些资源保留各自的许可、版权和商标要求。具体来源与说明见 [THIRD-PARTY.md](THIRD-PARTY.md)。本项目不由 Google 或 Microsoft 提供或背书。
