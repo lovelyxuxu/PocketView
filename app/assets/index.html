@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'"><title>PocketView · 收藏首页</title><link rel="stylesheet" href="home.css"><script src="home.js" defer></script></head>
+<body>
+<aside class="sidebar">
+ <div class="brand"><img src="pocketview.png" width="28" height="28" alt=""><div>PocketView</div></div>
+ <button class="nav active" data-view="favorites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4Z"/></svg> 收藏 <b id="total">0</b></button>
+ <button class="nav" data-view="history"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2 7M3 5v6h6m3-4v5l3 2"/></svg> 最近访问</button>
+ <div class="nav-caption collection-caption">收藏分组</div><div id="groups"></div>
+ <div class="sidebar-bottom"><button class="nav" id="help"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 8.5a2.5 2.5 0 0 1 5 0c0 2-2.5 2-2.5 4M12 16h.01"/></svg> 说明</button><button class="nav" data-view="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="8" cy="7" r="3"/><circle cx="16" cy="17" r="3"/></svg> 设置</button></div>
+</aside>
+<main>
+ <section class="intro"><h1 id="heading">收藏</h1><button class="primary" id="add"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> 添加收藏</button></section>
+ <div id="warning" class="warning" hidden></div>
+ <section id="favoritesView">
+  <div class="collection-toolbar"><div class="section-title"><strong id="collectionName">全部收藏</strong><span id="count">0 项</span></div><label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><input id="search" placeholder="搜索收藏" aria-label="搜索收藏"><kbd>/</kbd></label></div>
+  <div class="grid" id="cards"></div>
+  <div class="empty" id="empty" hidden><svg class="empty-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4Z"/></svg><h2>暂无收藏</h2><button class="secondary" id="firstAdd">添加收藏</button></div>
+  <div class="no-results" id="noResults" hidden>无匹配结果</div>
+  <div class="collection-footer"><div><button class="text-button" id="import">导入收藏</button><button class="text-button" id="export">导出收藏</button></div></div>
+ </section>
+ <section id="historyView" hidden><div class="collection-toolbar history-toolbar"><button class="text-button danger" id="clearHistory">清空历史</button></div><div id="historyList" class="history-list"></div></section>
+ <section id="settingsView" hidden>
+  <div class="settings-card"><h2>数据目录</h2><div class="folder-row"><strong>个人数据</strong><span>收藏、设置</span></div><div class="folder-row"><strong>浏览数据</strong><span>登录、缓存、历史、下载</span></div><p class="muted">分享前关闭程序，并删除副本中的“浏览数据”。</p><button class="secondary" id="folder">打开文件夹</button></div>
+  <div class="settings-card"><div class="setting-line"><div><h2>全局快捷键</h2><p id="hotkeyStatus">Ctrl+Alt+Space 唤出窗口</p></div><label class="switch"><input type="checkbox" id="hotkey" aria-label="启用全局快捷键"><span></span></label></div><div class="settings-actions"><button class="secondary" id="helpSettings">快捷键说明</button></div></div>
+
+ </section>
+</main>
+<dialog id="editor"><form id="editorForm"><div class="dialog-heading"><h2 id="editorTitle">添加收藏</h2><button class="icon-button" type="button" id="closeEditor" aria-label="关闭">×</button></div><label>名称<input id="nameInput" maxlength="160" placeholder="网站名称" autocomplete="off"></label><label>网址<input id="urlInput" required maxlength="8192" placeholder="https://example.com" autocomplete="off"></label><label>分组<input id="groupInput" list="groupOptions" maxlength="60" placeholder="未分组" autocomplete="off"><datalist id="groupOptions"></datalist></label><p id="formError" class="form-error" hidden></p><div class="dialog-actions"><button type="button" class="secondary" id="cancelEditor">取消</button><button type="submit" class="primary" id="saveEditor">保存</button></div></form></dialog>
+<dialog id="confirmDialog"><h2 id="confirmTitle">删除收藏？</h2><p id="confirmText"></p><div class="dialog-actions"><button class="secondary" id="confirmCancel">取消</button><button class="primary" id="confirmOk">确认删除</button></div></dialog>
+<div id="toast" role="status" hidden></div>
+</body></html>

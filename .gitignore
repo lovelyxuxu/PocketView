@@ -1,0 +1,27 @@
+# Local user content and browser profile, including copies and backups.
+**/个人数据/
+**/浏览数据/
+**/verification-profile/
+**/收藏.json*
+**/设置.json*
+**/历史.json*
+
+# Downloaded runtime, restored dependencies, and build outputs.
+/work/
+/app/runtime/
+/app/*.exe
+/app/*.dll
+*.pdb
+*.lnk
+*.log
+*.tmp
+*.bak
+
+# Editor and machine settings.
+.vs/
+.idea/
+*.user
+*.suo
+.env
+.env.*
+!.env.example
