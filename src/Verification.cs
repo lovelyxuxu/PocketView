@@ -68,6 +68,23 @@ namespace PocketView {
                 for(int attempt=0;attempt<3;attempt++) {
                     show.Invoke(form,new object[]{false});await Task.Delay(200);showMenu.Invoke(form,null);
                     var menu=(ContextMenuStrip)menuField.GetValue(form);
+                    if(attempt==0) {
+                        Check(menu is NavigationMenu&&menu.Region!=null,"more menu uses a rounded custom surface");
+                        var zoom=menu.Items.OfType<ToolStripControlHost>().Single().Control;
+                        double startingZoom=web.ZoomFactor;
+                        ((Button)zoom.Controls.Find("zoom-in",true).Single()).PerformClick();
+                        Check(Math.Abs(web.ZoomFactor-Math.Min(5,startingZoom+.1))<.001&&menu.Visible,"zoom increment works without dismissing menu");
+                        ((Button)zoom.Controls.Find("zoom-reset",true).Single()).PerformClick();
+                        Check(Math.Abs(web.ZoomFactor-1)<.001,"zoom percentage restores actual webpage scale");
+                        ((Button)zoom.Controls.Find("zoom-out",true).Single()).PerformClick();
+                        Check(Math.Abs(web.ZoomFactor-.9)<.001&&menu.Visible,"zoom decrement works without dismissing menu");
+                        ((Button)zoom.Controls.Find("zoom-reset",true).Single()).PerformClick();
+                        using(var bitmap=new Bitmap(menu.Width,menu.Height))using(var preview=new Bitmap(menu.Width,menu.Height)) {
+                            menu.DrawToBitmap(bitmap,menu.ClientRectangle);
+                            using(var graphics=Graphics.FromImage(preview)){graphics.Clear(Color.Transparent);graphics.SetClip(menu.Region,System.Drawing.Drawing2D.CombineMode.Replace);graphics.DrawImageUnscaled(bitmap,0,0);}
+                            preview.Save(Path.Combine(output,"navigation-menu.png"),System.Drawing.Imaging.ImageFormat.Png);
+                        }
+                    }
                     var helpItem=menu.Items.Cast<ToolStripItem>().Single(item=>item.Text=="快捷键说明");
                     menu.Close(ToolStripDropDownCloseReason.ItemClicked);
                     Check(!menu.IsDisposed,"menu survives synchronous ItemClicked close dispatch "+attempt);
@@ -94,6 +111,14 @@ namespace PocketView {
                 data.Favorites.Clear();data.History.Clear();data.SaveFavorites();data.SaveHistory();state();await Task.Delay(200);
                 Check(await web.ExecuteScriptAsync("document.getElementById('empty').hidden === false")=="true","empty favorites homepage");
                 using(var stream=File.Create(Path.Combine(output,"home-empty.png"))) await web.CoreWebView2.CapturePreviewAsync(CoreWebView2CapturePreviewImageFormat.Png,stream);
+                var screenshotBounds=form.Bounds;form.Size=new Size(1080,720);
+                data.Upsert(null,"GitHub","https://github.com/","开发");
+                data.Upsert(null,"MDN Web Docs","https://developer.mozilla.org/","开发");
+                data.Upsert(null,"维基百科","https://zh.wikipedia.org/","阅读");
+                data.Upsert(null,"YouTube","https://www.youtube.com/","视频");
+                state();await Task.Delay(250);
+                using(var stream=File.Create(Path.Combine(output,"readme-home.png")))await web.CoreWebView2.CapturePreviewAsync(CoreWebView2CapturePreviewImageFormat.Png,stream);
+                data.Favorites.Clear();data.SaveFavorites();state();form.Bounds=screenshotBounds;await Task.Delay(100);
                 await web.ExecuteScriptAsync("document.getElementById('add').click();document.getElementById('nameInput').value='窗口内视频测试';document.getElementById('urlInput').value='https://pocketview.local/verify.html';document.getElementById('groupInput').value='视频';document.getElementById('editorForm').requestSubmit();");
                 await Wait(web,"document.querySelectorAll('.card').length === 1 && !document.getElementById('editor').open");
                 Check(data.Favorites.Count==1,"favorite created through homepage form and native bridge");

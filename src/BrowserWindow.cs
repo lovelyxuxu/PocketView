@@ -299,34 +299,35 @@ namespace PocketView {
             }
         }
         ContextMenuStrip navigationMenu;
-        void AddMenuAction(ContextMenuStrip menu,string text,string shortcut,Action action) {
-            var item=new ToolStripMenuItem(text){ShortcutKeyDisplayString=shortcut,Padding=new Padding(4,5,4,5)};
+        void AddMenuAction(ContextMenuStrip menu,string icon,string text,string shortcut,Action action) {
+            var item=new ToolStripMenuItem(text){Tag=icon,ShortcutKeyDisplayString=shortcut,AutoSize=false,Size=new Size(288,38),Margin=Padding.Empty};
             item.Click+=delegate { if(!IsDisposed)BeginInvoke((Action)(()=>{if(!IsDisposed)action();})); };
             menu.Items.Add(item);
         }
         void ShowMenu() {
             if(navigationMenu!=null&&!navigationMenu.IsDisposed)navigationMenu.Close();
             menuOpen=true;
-            var menu=new ContextMenuStrip{ShowImageMargin=false,Font=new Font("Microsoft YaHei UI",9),BackColor=Color.White,ForeColor=UiStyle.Ink,Padding=new Padding(6),Name="navigationMenu"};
+            var menu=new NavigationMenu();
             navigationMenu=menu;
-            AddMenuAction(menu,"收藏首页","Alt+Home",Home);
-            AddMenuAction(menu,"收藏当前页","Ctrl+D",AddCurrent);
-            AddMenuAction(menu,"切换置顶","Ctrl+Shift+T",TogglePin);
-            menu.Items.Add(new ToolStripSeparator());
-            AddMenuAction(menu,"缩小网页","",()=>{web.ZoomFactor=Math.Max(.25,web.ZoomFactor-.1);});
-            AddMenuAction(menu,"放大网页","",()=>{web.ZoomFactor=Math.Min(5,web.ZoomFactor+.1);});
-            AddMenuAction(menu,"恢复网页缩放","",()=>{web.ZoomFactor=1;});
-            menu.Items.Add(new ToolStripSeparator());
-            AddMenuAction(menu,"移动窗口","Alt+F7",()=>MoveOrSize(true));
-            AddMenuAction(menu,"调整窗口大小","Alt+F8",()=>MoveOrSize(false));
-            AddMenuAction(menu,"打开程序文件夹","",()=>Process.Start("explorer.exe","\""+Data.Root+"\""));
-            AddMenuAction(menu,"快捷键说明","F1",ShowHelp);
+            AddMenuAction(menu,"home","收藏首页","Alt+Home",Home);
+            AddMenuAction(menu,"favorite","收藏当前页","Ctrl+D",AddCurrent);
+            AddMenuAction(menu,"pin",TopMost?"取消置顶":"窗口置顶","Ctrl+Shift+T",TogglePin);
+            menu.Items.Add(new ToolStripSeparator{AutoSize=false,Size=new Size(288,12),Margin=Padding.Empty});
+            var zoom=new ZoomMenuPanel(()=>web.ZoomFactor,value=>web.ZoomFactor=value){Font=menu.Font};
+            menu.Items.Add(new ToolStripControlHost(zoom){AutoSize=false,Size=zoom.Size,Margin=Padding.Empty,Padding=Padding.Empty});
+            menu.Items.Add(new ToolStripSeparator{AutoSize=false,Size=new Size(288,12),Margin=Padding.Empty});
+            AddMenuAction(menu,"move","移动窗口","Alt+F7",()=>MoveOrSize(true));
+            AddMenuAction(menu,"resize","调整窗口大小","Alt+F8",()=>MoveOrSize(false));
+            AddMenuAction(menu,"folder","打开程序文件夹","",()=>Process.Start("explorer.exe","\""+Data.Root+"\""));
+            AddMenuAction(menu,"help","快捷键说明","F1",ShowHelp);
             menu.Closed+=delegate {
                 menuOpen=false;if(!IsDisposed)hideTimer.Start();
                 // ToolStrip still accesses its items while dispatching ItemClicked. Dispose on the next UI turn.
                 if(!IsDisposed)BeginInvoke((Action)(()=>{menu.Dispose();if(navigationMenu==menu)navigationMenu=null;}));
             };
-            menu.Show(bar,new Point(Math.Max(0,bar.Width-244),bar.Height+6));
+            menu.FitContent();
+            int x=Math.Max(8,Math.Min(ClientSize.Width-menu.Width-8,bar.Left+bar.Controls["nav-more"].Left-menu.Width/2+17));
+            menu.Show(this,new Point(x,bar.Bottom+8));
         }
         void ShowHelp() { using(var dialog=new HelpDialog())dialog.ShowDialog(this); }
         static bool IsOurKey(Keys key) { return key==(Keys.Control|Keys.T) || key==(Keys.Control|Keys.Shift|Keys.B) || key==(Keys.Control|Keys.Tab) || key==(Keys.Control|Keys.Shift|Keys.Tab) || key==Keys.F2 || key==(Keys.Control|Keys.W) || key == (Keys.Alt|Keys.F7) || key == (Keys.Alt|Keys.F8) || key == (Keys.Control|Keys.L) || key == (Keys.Control|Keys.D) || key == (Keys.Control|Keys.Shift|Keys.T) || key == (Keys.Alt|Keys.Home) || key == (Keys.Alt|Keys.Left) || key == (Keys.Alt|Keys.Right) || key == Keys.F5 || key == Keys.F11 || key == Keys.F1; }
